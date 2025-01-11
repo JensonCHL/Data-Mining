@@ -3,7 +3,7 @@ We just use 2 dataset the file name is dataset1 and dataset3 and we combined it.
 
 Note:
 
-- ReadyModelDataset contain files that are cleaned and ready to use by algorithm models.
+- ReadyModelDataset contain files that are cleaned and ready to be used by algorithm models.
 
 
 
