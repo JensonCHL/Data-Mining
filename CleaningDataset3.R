@@ -13,13 +13,11 @@ erro
 
 #Loading Dataset
 dataset1 <- read.csv("dataset1/dataset1.csv")
-dataset2 <- read.csv("dataset2/dataset2.csv")
 
 dataset3 <- read.csv("dataset3/cleaned_dataset3.1.csv")
 dataset3 <- dataset3 %>% arrange(AppID)
 dataset3 <- dataset3 %>%
   filter(Name != "Counter-Strike")
-dataset2and3 <- read.csv("dataset2and3/dataset2and3.csv")
 dataset3raw <- read.csv("dataset3/games.csv",row.names = NULL)
 
 #dataset3 drop col
@@ -111,17 +109,7 @@ write.csv(dataset3_cleaned, "cleaned_dataset3.1.csv", row.names = FALSE)
 
 #Combine
 
-#Modify Genre COlumn
-dataset2and3$genres <- sapply(strsplit(dataset2and3$genres, ";"), `[`, 1)
-dataset2and3$categories <- sapply(strsplit(dataset2and3$categories, ";"), `[`, 1)
-dataset2and3 <- dataset2and3 %>% select(-Cluster)
-unique(dataset2and3$steamspy_tags)
-dataset2and3 <- dataset2and3 %>% select(-steamspy_tags)
-dataset2and3 <- dataset2and3 %>%
-  mutate(
-    release_year = as.integer(substr(release_date, 1, 4)),  # Extract year
-    release_month = as.integer(substr(release_date, 6, 7))  # Extract month
-  )
+
 #Average Price Plot
 # Assuming dataset_filtered is your data frame with numeric columns
 correlation_matrix <- cor(dataset_filtered)
@@ -148,20 +136,9 @@ ggplot(data = melted_correlation_matrix, aes(x = Var1, y = Var2, fill = value)) 
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
 
 
-write.csv(dataset2and3, "dataset2and3/dataset2and3.csv", row.names = FALSE)
 
 
 
-  ggplot(dataset2and3, aes(x = reorder(genres, Average.playtime.forever), y = Average.playtime.forever)) +
-  geom_bar(stat = "identity", fill = "skyblue", color = "black") +
-  labs(title = "Average Playtime by Genre", x = "Genre", y = "Average Playtime (Forever)") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1),  # Rotate x-axis labels
-        plot.title = element_text(hjust = 0.5))
-
-
-top_positive_ratings <- dataset2and3 %>%
-  arrange(desc(positive_ratings)) %>%
-  head(15)
 
 ggplot(top_positive_ratings, aes(x = reorder(name, positive_ratings), y = positive_ratings)) +
   geom_bar(stat = "identity", fill = "skyblue", color = "black") +
@@ -245,25 +222,10 @@ summary(cluster_dataset)
 num_zero_scores <- sum(dataset3$Metacritic.score == 0, na.rm = TRUE)
 
 
-dataset_transformed <- log1p(dataset2and3[, c("Average.playtime.forever","price","Recommendations")])
-dataset_scaled <- scale(dataset_transformed)
-pca_result <- prcomp(dataset_scaled, center = TRUE, scale. = TRUE)
 
-
-
-pca_result <- prcomp(TryCluster, center = TRUE, scale. = TRUE)
-pca_data <- as.data.frame(pca_result$x[, 1:2])  # Get the first two principal components
-pca_data$Cluster <- TryCluster$Cluster
-pca_data$Recommendations <- TryCluster$Recommendations
-
-ggplot(pca_data, aes(x = PC1, y = PC2, color = Cluster)) +
-  geom_point() +
-  
-  labs(title = "PCA of Clustering with Action Genre Highlighted")
 
 #Drop Null  Average column
 #Split Genre 
-split_genres <- strsplit(dataset2and3$genres, ";")
 all_genres <- as.data.frame(unique(unlist(split_genres)))
 all_genres <- trimws(all_genres)  # Trim whitespace
 
@@ -314,13 +276,7 @@ sum(is.na(cluster_dataset))
 
 
 
-ggpairs(dataset2and3[, c("Average.playtime.forever", "positive_ratings", "Recommendations")])
 
-
-unique(dataset2and3$genres)
-summary(dataset2and3$required_age)
-
-nrow(filter(dataset2and3,required_age  == 0))
 
 #Required Age column
 
