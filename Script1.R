@@ -82,19 +82,17 @@ na_rows <- dataset3[is.na(dataset3$Achievements),]
 head(dataset3$About.the.game)
 
 #Shifting (Done)
-#dlc <- which(names(dataset3) == "DiscountDLC.count")
-#dataset3[, (dlc + 1):ncol(dataset3)] <- dataset3[, (dlc + 2):ncol(dataset3)]
-#dataset3[, ncol(dataset3)] <- NA
-#Notion
+dlc <- which(names(dataset3) == "DiscountDLC.count")
+dataset3[, (dlc + 1):ncol(dataset3)] <- dataset3[, (dlc + 2):ncol(dataset3)]
+dataset3[, ncol(dataset3)] <- NA
+Notion
 
 #Cleaning APP ID COlumn 
-#dataset3$AppID <- as.integer(dataset3$AppID)
-#sum(is.na(dataset3$AppID))
-#na_rows <- dataset3[is.na(dataset3$AppID), ]
-#dataset3<- dataset3[!is.na(dataset3$AppID), ]
+dataset3$AppID <- as.integer(dataset3$AppID)
+sum(is.na(dataset3$AppID))
+na_rows <- dataset3[is.na(dataset3$AppID), ]
+dataset3<- dataset3[!is.na(dataset3$AppID), ]
 
-
-rm(list = ls())
 
 #Cleaning 
 
@@ -102,8 +100,8 @@ rm(list = ls())
 
 
 #Removing Column
-#dataset3_cleaned <- dataset3 %>% select(-Header.image,-Website, -Support.url,-Support.email,-Metacritic.url, -Screenshots)
-#write.csv(dataset3_cleaned, "cleaned_dataset3.1.csv", row.names = FALSE)
+dataset3_cleaned <- dataset3 %>% select(-Header.image,-Website, -Support.url,-Support.email,-Metacritic.url, -Screenshots)
+write.csv(dataset3_cleaned, "cleaned_dataset3.1.csv", row.names = FALSE)
 
 
 #Combining data 
@@ -251,46 +249,6 @@ dataset_transformed <- log1p(dataset2and3[, c("Average.playtime.forever","price"
 dataset_scaled <- scale(dataset_transformed)
 pca_result <- prcomp(dataset_scaled, center = TRUE, scale. = TRUE)
 
-#KMeans
-
-wss <- sapply(1:10, function(k){
-  kmeans(TryCluster, centers = k, nstart = 100)$tot.withinss
-})
-
-TryCluster <- scale(dataset_filtered)
-
-fviz_nbclust(TryCluster, kmeans, method = "wss") +
-  labs(subtitle = "Elbow Method")
-
-km.out <- kmeans(TryCluster,centers = 3, nstart = 100)
-print(km.out)
-
-TryCluster_df <- as.data.frame(TryCluster)
-TryCluster_df$Cluster <- as.factor(km.out$cluster)
-
-
-fviz_cluster(list(data = TryCluster_df[, -ncol(TryCluster_df)], cluster = km.out$cluster)) +
-  labs(title = "KMeans Clustering Results")
-
-table(km.out$cluster, TryCluster_df$Cluster)
-
-
-kmeans_result <- kmeans(TryCluster, centers = 3, nstart = 100)
-
-TryCluster$Cluster <- as.factor(kmeans_result$cluster)
-
-base_plot <- ggplot(TryCluster, aes(x = Average.playtime.forever, y = Required.age, color = Cluster)) +
-  geom_point() +
-  labs(title = "KMeans Clustering", x = "Average Playtime Forever", y = "User Reccomendations")
-
-final_plot <- base_plot +
-  geom_point(data = subset(TryCluster, Action == 1), 
-             aes(x = Average.playtime.forever, y = Recommendations), 
-             color = "green", size = 2, shape = 21) 
-final_plot
-
-str(TryCluster)
-TryCluster <- TryCluster %>% select_if(is.numeric)
 
 
 pca_result <- prcomp(TryCluster, center = TRUE, scale. = TRUE)
