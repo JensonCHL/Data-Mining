@@ -52,7 +52,7 @@ unique_chars <- unique(all_chars)
 
 cat("Unusual characters found in the 'name' column: ", unusual_chars, "\n")
 
-
+#Combining the dataset using Inner Join
 combined_dataset <- inner_join(dataset1, dataset3, by = "name") 
 
 sum(is.na(combined_dataset))
